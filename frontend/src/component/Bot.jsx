@@ -13,23 +13,31 @@ function Bot() {
     },[messages])
 
     const handleSendMessage = async () => {
-        setLoading(true);
-        if(!input.trim()) return;
-        try {
-           const res=await axios.post("https://chatbot-2-3jxb.onrender.com/bot/v1/message",{
-                text: input
-            })
-            if(res.status === 200) {
-                setMessages([...messages, { text: res.data.userMessage, sender: 'user' }, { text: res.data.botMessage, sender: 'bot' }]);
-               
-            }
-            console.log(res.data)
-        } catch (error) {
-            console.log("Error sending message:", error);
-        }
-         setInput("");
-            setLoading(false);
-    }
+  if (!input.trim()) return;
+
+  setLoading(true);
+
+  try {
+    const res = await axios.post(
+      "https://chatbot-2-3jxb.onrender.com/bot/v1/message",
+      { text: input }
+    );
+
+    // Updated message pushing logic
+    setMessages([
+      ...messages,
+      { text: input, sender: "user" },
+      { text: res.data.botMessage || res.data.message, sender: "bot" }
+    ]);
+
+  } catch (error) {
+    console.log("Error sending message:", error);
+  }
+
+  setInput("");
+  setLoading(false);
+};
+
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') handleSendMessage()}
